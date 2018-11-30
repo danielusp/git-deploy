@@ -1,0 +1,15 @@
+{
+  "name": "git-deploy",
+  "version": "0.5.5",
+  "description": "Read a local GIT repository and publish the commited files by FTP - Beta version",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "simple-git": "^1.107.0"
+  }
+}
