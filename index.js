@@ -2,13 +2,21 @@ const fileManager = require('./lib/fileManager');
 const git = require('./lib/git');
 const utils = require('./lib/utils');
 const deploy = require('./lib/deploy');
+const init =  require('./lib/init');
 
 (async () => {
 		
 	//	Configs
-	let config = await fileManager.configs({
+	var config = await fileManager.configs({
 		id: process.argv[2] || false
 	})
+
+	//	Creates a new config.json file based on user entry
+	if ( !config ) {
+		config = await fileManager.readConfigTemp()
+		await init.configFile(config)
+		process.exit(1)
+	} 
 
 	//	Params control
 	if ( config.last_hash == undefined ) {
@@ -21,7 +29,7 @@ const deploy = require('./lib/deploy');
 		process.exit(1)
 	}
 
-	//	Pub just master branch
+	//	Pubs just master branch
 	git.gitbranchLocal({
 		local_path: config.local_path
 	})
