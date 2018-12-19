@@ -30,22 +30,19 @@ const init =  require('./lib/init');
 		})
 
 		console.log( `\n\nSelect a repo using the sintax:$ node index.js [repository_name]` )
-		
 		process.exit(1)
 	}
 
 	//	Pubs just master branch
-	git.gitbranchLocal({
-		local_path: config.local_path
-	})
+	await git.gitbranchLocal( config.local_path )
 	.then( result => {
+		
 		if ( result.current != 'master' ) {
-			
 			console.log( `${config.id} not in master branch` )
 			process.exit(1)
 		}
 	})
-
+	
 	// Application process
 	git.gitLog({
 		local_path: config.local_path
