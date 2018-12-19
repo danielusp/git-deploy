@@ -13,6 +13,9 @@ const init =  require('./lib/init');
 
 	//	Creates a new config.json file based on user entry if there is no config
 	if ( !config ) {
+		
+		console.log( `There is no config file.\nNow we're going to create it.` )
+
 		config = await fileManager.readConfigTemp()
 		await init.configFile(config)
 		process.exit(1)
@@ -20,11 +23,13 @@ const init =  require('./lib/init');
 
 	//	Params control
 	if ( config.last_hash == undefined ) {
-		console.log( "Repo list" , "\n" )
+		console.log( `Repo list\n` )
 
 		Object.keys(config).map( item => {
 			console.log( `- ${item}` )
 		})
+
+		console.log( `\n\nSelect a repo using the sintax:$ node index.js [repository_name]` )
 		
 		process.exit(1)
 	}
