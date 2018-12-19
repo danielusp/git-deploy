@@ -1,5 +1,5 @@
-{
-	"repository_name": {
+[
+	{
 		"id": "repository_name",
 		"local_path": "/local/path/to/repository_name/",
 		"ftp": {
@@ -9,4 +9,4 @@
 			"path": "/"
 		}
 	}
-}
+]

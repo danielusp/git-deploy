@@ -11,7 +11,7 @@ const init =  require('./lib/init');
 		id: process.argv[2] || false
 	})
 
-	//	Creates a new config.json file based on user entry
+	//	Creates a new config.json file based on user entry if there is no config
 	if ( !config ) {
 		config = await fileManager.readConfigTemp()
 		await init.configFile(config)
