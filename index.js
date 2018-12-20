@@ -7,7 +7,7 @@ const init =  require('./lib/init');
 (async () => {
 		
 	//	Configs
-	var config = await fileManager.configs({
+	const config = await fileManager.configs({
 		id: process.argv[2] || false
 	})
 
@@ -35,86 +35,88 @@ const init =  require('./lib/init');
 
 	//	Pubs just master branch
 	await git.gitbranchLocal( config.local_path )
-	.then( result => {
-		
-		if ( result.current != 'master' ) {
-			console.log( `${config.id} not in master branch` )
-			process.exit(1)
-		}
-	})
+		.then( result => {
+			
+			if ( result.current != 'master' ) {
+				console.log( `${config.id} not in master branch` )
+				process.exit(1)
+			}
+		})
 	
-	// Application process
-	git.gitLog({
-		local_path: config.local_path
-	})
-	.then( result => {
+	//	Get repo log list with hashes
+	const log_result = await git.gitLog( config.local_path )
+		.catch( err => {
+			console.log( 'gitLog error' , '\n\n' , err )
+			process.exit(1)
+		})
 
-		let promise_list = {
-			git_show: [],
-			file_exists: []
-		}
-		let files_upload = {
-			up:[],
-			del:[]
-		}
-		let item = result.all.shift()
+	// Vars setup
+	let promise_list = {
+		git_show: [],
+		file_exists: []
+	}
+	let files_upload = {
+		up:[],
+		del:[]
+	}
 
-		while (
-			result.all.length > 0 && 
-			item.hash != config.last_hash 
-		) {
-			promise_list.git_show.push( git.gitShow({
-				hash:item.hash,
-				local_path:config.local_path
-			}))
-			item = result.all.shift()
-		}
+	//	Get first log item to compare with history
+	let item = log_result.all.shift()
 
-		Promise.all( promise_list.git_show )
-			.then( r => {
-			    r.map( item => {
-			       	utils.filter(item.result).map( i => {
-			       		
-			       		promise_list.file_exists.push(
-				       		fileManager.fileExists({
-				       			file: i,
-				       			local_path: config.local_path
-				       		})
-				       		.then( ret => {
-				       			if ( ret.status ) {
-				       			
-				       				if( !files_upload.up.includes(ret.file) && !ret.file.match(/^\..*/) ) {
-						       			files_upload.up.push(ret.file)
-						       		}
-				       			} else {
-				       			
-				       				if( !files_upload.del.includes(ret.file) && !ret.file.match(/^\..*/) ) {
-						       			files_upload.del.push(ret.file)
-						       		}
-				       			}
-				       		})
-			       		)
+	//	Dig into log list looking for the last hash history
+	while (
+		log_result.all.length > 0 && 
+		item.hash != config.last_hash 
+	) {
+		promise_list.git_show.push( git.gitShow({
+			hash:item.hash,
+			local_path:config.local_path
+		}))
+		item = log_result.all.shift()
+	}
 
-			      	})
-			    })
-			})
-			.then(() => {
-				Promise.all( promise_list.file_exists )
-			    	.then(() => {
-			    		deploy({
-					    	config: config,
-					    	latest_hash: result.latest.hash,
-					    	files_upload: files_upload,
-					    	fileManager: fileManager
-					    })
-			    	})
-			})
-			.catch( err => {
-				console.log( 'error' , '\n\n' , err )
-			})
-	})
-	.catch( err => {
-		console.log( 'gitLog error' , '\n\n' , err )
-	})
+	//	Runs upload/delete list
+	Promise.all( promise_list.git_show )
+		.then( r => {
+		    r.map( item => {
+		       	utils.filter(item.result).map( i => {
+		       		promise_list.file_exists.push(
+			       		fileManager.fileExists({
+			       			file: i,
+			       			local_path: config.local_path
+			       		})
+			       		.then( ret => {
+			       			if ( ret.status ) {
+			       			
+			       				if( !files_upload.up.includes(ret.file) && !ret.file.match(/^\..*/) ) {
+					       			files_upload.up.push(ret.file)
+					       		}
+			       			} else {
+			       			
+			       				if( !files_upload.del.includes(ret.file) && !ret.file.match(/^\..*/) ) {
+					       			files_upload.del.push(ret.file)
+					       		}
+			       			}
+			       		})
+		       		)
+		      	})
+		    })
+		})
+		.then(() => {
+			Promise.all( promise_list.file_exists )
+		    	.then(() => {
+		    		deploy({
+				    	config: config,
+				    	latest_hash: log_result.latest.hash,
+				    	files_upload: files_upload,
+				    	fileManager: fileManager
+				    })
+		    	})
+		})
+		.catch( err => {
+			console.log( 'error' , '\n\n' , err )
+		})
+	
+	
 })()
 
