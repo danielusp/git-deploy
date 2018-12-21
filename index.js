@@ -80,8 +80,18 @@ const init =  require('./lib/init');
 
 	//	Runs upload/delete list
 	Promise.all( promise_list.git_show )
-		.then( r => {
-		    r.map( item => {
+		//	List is empty or has values?
+		.then( ret => {
+			if ( ret.length === 0 ) {
+				console.log( 'Nothing to publish' )
+				process.exit(1)
+			} else {
+				return ret
+			}
+		})
+		// Build list of files to deploy
+		.then( ret => {
+		    ret.map( item => {
 		       	utils.filter(item.result).map( i => {
 		       		promise_list.file_exists.push(
 			       		fileManager.fileExists({
@@ -105,6 +115,7 @@ const init =  require('./lib/init');
 		      	})
 		    })
 		})
+		//	Deploy list
 		.then(() => {
 			Promise.all( promise_list.file_exists )
 		    	.then(() => {
