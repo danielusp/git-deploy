@@ -1,6 +1,6 @@
 {
   "name": "git-deploy",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "description": "Read a local GIT repository and publish the commited files by FTP - Beta version",
   "main": "index.js",
   "scripts": {

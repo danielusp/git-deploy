@@ -36,11 +36,14 @@ const init =  require('./lib/init');
 	//	Pubs just master branch
 	await git.gitbranchLocal( config.local_path )
 		.then( result => {
-			
 			if ( result.current != 'master' ) {
 				console.log( `${config.id} not in master branch` )
 				process.exit(1)
 			}
+		})
+		.catch( err => {
+			console.log( 'Git Repo Error' , '\n\n' , err )
+			process.exit(1)
 		})
 	
 	//	Get repo log list with hashes
@@ -114,7 +117,7 @@ const init =  require('./lib/init');
 		    	})
 		})
 		.catch( err => {
-			console.log( 'error' , '\n\n' , err )
+			console.log( 'Git Show error' , '\n\n' , err )
 		})
 	
 	
