@@ -125,6 +125,10 @@ const init =  require('./lib/init');
 				    	files_upload: files_upload,
 				    	fileManager: fileManager
 				    })
+					    .catch( err => {
+					    	console.log( 'FTP error' , '\n\n' , err )
+							process.exit(1)
+					    })
 		    	})
 		})
 		.catch( err => {
@@ -133,4 +137,3 @@ const init =  require('./lib/init');
 	
 	
 })()
-
