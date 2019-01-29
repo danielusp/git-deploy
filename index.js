@@ -7,7 +7,7 @@ const init =  require('./lib/init');
 (async () => {
 		
 	//	Configs
-	const config = await fileManager.configs({
+	let config = await fileManager.configs({
 		id: process.argv[2] || false
 	})
 
