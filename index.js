@@ -100,13 +100,13 @@ const init =  require('./lib/init');
 			       		})
 			       		.then( ret => {
 			       			if ( ret.status ) {
-			       			
-			       				if( !files_upload.up.includes(ret.file) && !ret.file.match(/^\..*/) ) {
+
+			       				if( !files_upload.up.includes(ret.file) && utils.blacklistFilter( ret.file , config ) ) {
 					       			files_upload.up.push(ret.file)
 					       		}
 			       			} else {
 			       			
-			       				if( !files_upload.del.includes(ret.file) && !ret.file.match(/^\..*/) ) {
+			       				if( !files_upload.del.includes(ret.file) && utils.blacklistFilter( ret.file , config ) ) {
 					       			files_upload.del.push(ret.file)
 					       		}
 			       			}
@@ -119,7 +119,7 @@ const init =  require('./lib/init');
 		.then(() => {
 			Promise.all( promise_list.file_exists )
 		    	.then(() => {
-		    		deploy({
+					deploy({
 				    	config: config,
 				    	latest_hash: log_result.latest.hash,
 				    	files_upload: files_upload,

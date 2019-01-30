@@ -27,3 +27,27 @@ node index.js
 ```
 node index.js [repository_name]
 ```
+
+#### config files to be ignored in blacklist propertie
+
+##### ignore folders
+```
+"blacklist": [
+			"images/*"
+		]
+```
+
+##### ignore files
+```
+"blacklist": [
+			".gitignore",
+			"css/main.log
+		]
+```
+
+##### ignore file extensions
+```
+"blacklist": [
+			"*.scss"
+		]
+```
